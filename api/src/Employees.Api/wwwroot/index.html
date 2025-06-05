@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A dynamic HTML page with HTMX">
+  <title>Dynamic Employee Overlap Calculator</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/htmx.org@1.7.0"></script>
+</head>
+<body>
+  <header>
+    <h1>Welcome to Dynamic Employee Overlap Calculator</h1>
+  </header>
+
+  <main>
+    <section>
+      <h2>About</h2>
+      <p>This page uploads a CSV and displays employee overlap results.</p>
+    </section>
+
+    <section>
+      <h2>Upload a File</h2>
+      <div id="loading-indicator" style="display: none;">Loading...</div>
+      <form
+        hx-post="/employees/overlap"
+        hx-target="#response"
+        hx-indicator="#loading-indicator"
+        hx-encoding="multipart/form-data"
+        enctype="multipart/form-data"
+        hx-swap="none">
+        <label for="formFile">Choose a .csv to upload:</label>
+        <input type="file" id="formFile" name="formFile" required>
+        <button type="submit">Submit</button>
+      </form>
+    </section>
+
+    <section id="response">
+      <p>No data uploaded yet.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Lazar Boradzhiev. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+      const container = document.getElementById('response');
+      if (!container) return;
+
+      if (evt.detail.target && evt.detail.target.id === 'response') {
+        try {
+          const data = JSON.parse(evt.detail.xhr.responseText);
+          let html = '';
+          if (data.best) {
+            html += `<p><strong>Top Pair:</strong> ${data.best}</p>`;
+          }
+          if (data.totals && Array.isArray(data.totals)) {
+            html += '<h3>All Overlaps:</h3><ul>';
+            data.totals.forEach(item => {
+              html += `<li>${item}</li>`;
+            });
+            html += '</ul>';
+          }
+          container.innerHTML = html;
+        } catch (e) {
+          console.error('Failed to parse JSON:', e);
+          container.innerHTML = '<p>Error displaying results.</p>';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
