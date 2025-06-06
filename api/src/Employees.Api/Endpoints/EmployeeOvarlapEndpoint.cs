@@ -40,20 +40,15 @@ namespace Employees.Api.Endpoints
                         return Results.BadRequest(new ErrorModel(NoValidEntriesError));
                     }
 
-                    var totals = calulator
-                        .CalculateOverlapTotals(entries)
-                        .OrderByDescending(kvp => kvp.Value)
-                        .Select(FormatResult);
+                    var best = calulator.CalculateBestOverlap(entries);
 
-                    return Results.Ok(new
-                    {
-                        Best = totals.First(),
-                        Totals = totals
-                    });
+                    return Results.Ok(best);
                 })
                 .WithName("EmployeesOverlap")
                 .DisableAntiforgery()
                 .Accepts<IFormFile>("multipart/form-data")
+                .Produces(StatusCodes.Status200OK, typeof(EmployeeResult))
+                .Produces(StatusCodes.Status400BadRequest, typeof(ErrorModel))
                 .WithOpenApi();
 
         private static string FormatResult(KeyValuePair<(int Emp1, int Emp2), int> first)

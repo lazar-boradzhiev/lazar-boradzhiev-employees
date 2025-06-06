@@ -4,10 +4,10 @@ namespace Employees.Api.Employees
 {
     public class EmployeeOverlapCalculator : IEmployeeOverlapCalculator
     {
-        public IDictionary<(int Emp1, int Emp2), int> CalculateOverlapTotals(IEnumerable<Entry> entries)
+        public EmployeeResult CalculateBestOverlap(IEnumerable<Entry> entries)
         {
             var byProject = entries.GroupBy(e => e.ProjectId);
-            var overlapTotals = new Dictionary<(int, int), int>();
+            var overlapTotals = new Dictionary<(int, int), List<EmployeeProjectResult>>();
 
             foreach (var projectGroup in byProject)
             {
@@ -16,18 +16,23 @@ namespace Employees.Api.Employees
                 {
                     for (int j = i + 1; j < projectEntries.Count; j++)
                     {
-                        CheckEmployees(overlapTotals, projectEntries, i, j);
+                        CheckEmployees(overlapTotals, projectEntries[i], projectEntries[j]);
                     }
                 }
             }
 
-            return overlapTotals;
+            var result = overlapTotals.OrderByDescending(x => x.Value.Sum(a => a.DaysWorked)).First();
+            return new EmployeeResult
+            {
+                Emp1 = result.Key.Item1,
+                Emp2 = result.Key.Item2,
+                Projects = result.Value
+            };
         }
 
-        private static void CheckEmployees(Dictionary<(int, int), int> overlapTotals, List<Entry> projectEntries, int i, int j)
+        private static void CheckEmployees(
+            Dictionary<(int, int), List<EmployeeProjectResult>> overlapTotals, Entry e1, Entry e2)
         {
-            var e1 = projectEntries[i];
-            var e2 = projectEntries[j];
             var overlap = GetOverlapDays(e1, e2);
             if (overlap > 0)
             {
@@ -36,9 +41,13 @@ namespace Employees.Api.Employees
                     : (e2.EmpId, e1.EmpId);
 
                 if (!overlapTotals.ContainsKey(key))
-                    overlapTotals[key] = 0;
+                    overlapTotals[key] = [];
 
-                overlapTotals[key] += overlap;
+                overlapTotals[key].Add(new EmployeeProjectResult
+                {
+                    DaysWorked = overlap,
+                    ProjectId = e1.ProjectId
+                });
             }
         }
 

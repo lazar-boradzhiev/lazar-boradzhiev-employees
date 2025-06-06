@@ -26,7 +26,7 @@ namespace Employees.Tests.Employees
             var entries = new List<Entry>();
 
             // Act
-            var result = calculator.CalculateOverlapTotals(entries);
+            var result = calculator.CalculateBestOverlap(entries);
 
             // Assert
             Assert.Empty(result);
@@ -43,7 +43,7 @@ namespace Employees.Tests.Employees
             };
 
             // Act
-            var result = calculator.CalculateOverlapTotals(entries);
+            var result = calculator.CalculateBestOverlap(entries);
 
             // Assert
             Assert.Empty(result);
@@ -61,7 +61,7 @@ namespace Employees.Tests.Employees
             };
 
             // Act
-            var result = calculator.CalculateOverlapTotals(entries);
+            var result = calculator.CalculateBestOverlap(entries);
 
             // Assert
             Assert.Empty(result);
@@ -82,7 +82,7 @@ namespace Employees.Tests.Employees
             var expectedDays = 17;
 
             // Act
-            var result = calculator.CalculateOverlapTotals(entries);
+            var result = calculator.CalculateBestOverlap(entries);
 
             // Assert
             Assert.Single(result);
@@ -120,7 +120,7 @@ namespace Employees.Tests.Employees
             var expectedEmp2Emp3Days = 3; // overlap Mar3-Mar5 inclusive = 3 days
 
             // Act
-            var result = calculator.CalculateOverlapTotals(entries);
+            var result = calculator.CalculateBestOverlap(entries);
 
             // Assert
             Assert.Equal(2, result.Count);
@@ -150,7 +150,7 @@ namespace Employees.Tests.Employees
             var expectedDays = 10;
 
             // Act
-            var result = calculator.CalculateOverlapTotals(entries);
+            var result = calculator.CalculateBestOverlap(entries);
 
             // Assert
             Assert.Single(result);

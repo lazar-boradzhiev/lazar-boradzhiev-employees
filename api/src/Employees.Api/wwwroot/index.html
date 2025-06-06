@@ -61,17 +61,19 @@
                 html += '</ul>';
             }
 
-          if (data.best) {
-            html += `<p><strong>Top Pair:</strong> ${data.best}</p>`;
-          }
-          if (data.totals && Array.isArray(data.totals)) {
-            html += '<h3>All Overlaps:</h3><ul>';
-            data.totals.forEach(item => {
-              html += `<li>${item}</li>`;
-            });
-            html += '</ul>';
-          }
-          container.innerHTML = html;
+            if (typeof data.emp1 !== 'undefined' && typeof data.emp2 !== 'undefined') {
+                html += `<p><strong>Employees:</strong> ${data.emp1} &amp; ${data.emp2}</p>`;
+            }
+
+            if (Array.isArray(data.projects) && data.projects.length > 0) {
+                html += '<h3>Projects and Days Worked:</h3><ul>';
+                data.projects.forEach(proj => {
+                    html += `<li>Project ID: ${proj.projectId}, Days Worked Together: ${proj.daysWorked}</li>`;
+                });
+                html += '</ul>';
+            }
+
+            container.innerHTML = html;
         } catch (e) {
           console.error('Failed to parse JSON:', e);
           container.innerHTML = '<p>Error displaying results.</p>';
