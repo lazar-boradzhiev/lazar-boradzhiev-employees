@@ -52,7 +52,15 @@
       if (evt.detail.target && evt.detail.target.id === 'response') {
         try {
           const data = JSON.parse(evt.detail.xhr.responseText);
-          let html = '';
+            let html = '';
+            if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+                html += '<h3>Errors:</h3><ul>';
+                data.errors.forEach(err => {
+                    html += `<li>${err}</li>`;
+                });
+                html += '</ul>';
+            }
+
           if (data.best) {
             html += `<p><strong>Top Pair:</strong> ${data.best}</p>`;
           }

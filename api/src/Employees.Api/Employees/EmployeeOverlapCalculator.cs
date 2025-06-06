@@ -7,7 +7,6 @@ namespace Employees.Api.Employees
         public IDictionary<(int Emp1, int Emp2), int> CalculateOverlapTotals(IEnumerable<Entry> entries)
         {
             var byProject = entries.GroupBy(e => e.ProjectId);
-
             var overlapTotals = new Dictionary<(int, int), int>();
 
             foreach (var projectGroup in byProject)

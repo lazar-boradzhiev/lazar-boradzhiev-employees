@@ -1,4 +1,5 @@
 using CsvHelper;
+using CsvHelper.Configuration;
 using System.Globalization;
 
 namespace Employees.Api.Csv
@@ -15,7 +16,11 @@ namespace Employees.Api.Csv
         public async Task<(List<Entry> Entries, List<string> Errors)> LoadEntriesAsync(Stream stream)
         {
             using var reader = new StreamReader(stream);
-            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                TrimOptions = TrimOptions.Trim,
+            };
+            using var csv = new CsvReader(reader, config);
             csv.Context.RegisterClassMap<EntryMap>();
 
             var records = new List<Entry>();
